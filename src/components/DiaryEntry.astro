@@ -1,0 +1,353 @@
+---
+import ImageModal from './ImageModal.astro';
+
+interface Props {
+  date: string;
+  title: string;
+  content: string;
+  photos?: string[];
+}
+
+const { date, title, content, photos = [] } = Astro.props;
+const previewImage = photos[0];
+---
+
+<div class="diary-entry">
+  <div class="entry-preview">
+    {previewImage && <img src={previewImage} alt={title} class="preview-image" loading="lazy" />}
+    <div class="preview-content">
+      <div class="date">{date}</div>
+      <h3>{title}</h3>
+    </div>
+  </div>
+  <button class="diary-header" aria-expanded="false" aria-controls="diary-content">
+    <span class="expand-text">Read full diary entry</span>
+    <svg class="chevron" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <div class="diary-content" id="diary-content">
+    <p>{content}</p>
+    {photos.length > 1 && (
+      <div class="photo-grid">
+        {photos.slice(1).map(photo => (
+          <img src={photo} alt="Daily travel photo" loading="lazy" class="gallery-image" data-gallery={photos.join(',')} />
+        ))}
+      </div>
+    )}
+  </div>
+</div>
+
+<ImageModal />
+
+<style>
+  .diary-entry {
+    background: rgba(var(--accent-dark), 0.2);
+    border-radius: 15px;
+    overflow: hidden;
+    width: 100%;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transform: translateY(30px);
+    transition: transform 0.6s ease, opacity 0.6s ease, box-shadow 0.3s ease;
+  }
+
+  .diary-entry.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .diary-entry:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .entry-preview {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+  }
+
+  .preview-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .diary-entry:hover .preview-image {
+    transform: scale(1.05);
+  }
+
+  .preview-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 3rem 2rem 2rem;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+    color: white;
+  }
+
+  .date {
+    color: rgb(var(--accent-light));
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  h3 {
+    color: white;
+    margin: 0;
+    font-size: 1.75rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .diary-header {
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 1.5rem 2rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: rgb(var(--accent-light));
+    text-align: left;
+    transition: background-color 0.3s ease;
+  }
+
+  .diary-header:hover {
+    background: rgba(var(--accent-dark), 0.3);
+  }
+
+  .expand-text {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  .chevron {
+    transition: transform 0.3s ease;
+  }
+
+  .diary-header[aria-expanded="true"] .chevron {
+    transform: rotate(180deg);
+  }
+
+  .diary-content {
+    padding: 0 2rem 2rem;
+    display: none;
+  }
+
+  .diary-header[aria-expanded="true"] + .diary-content {
+    display: block;
+  }
+
+  p {
+    color: white;
+    line-height: 1.8;
+    margin: 0 0 2rem 0;
+    font-size: 1.1rem;
+    white-space: pre-wrap;
+  }
+
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .photo-grid img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.3s ease, filter 0.3s ease;
+  }
+
+  .photo-grid img:hover {
+    transform: scale(1.02);
+    filter: brightness(1.1);
+  }
+
+  @media (max-width: 1024px) {
+    .entry-preview {
+      height: 250px;
+    }
+
+    h3 {
+      font-size: 1.5rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .entry-preview {
+      height: 220px;
+    }
+
+    .preview-content {
+      padding: 2rem 1.5rem 1.5rem;
+    }
+
+    .diary-content {
+      padding: 0 1.5rem 1.5rem;
+    }
+
+    .diary-header {
+      padding: 1rem 1.5rem;
+    }
+
+    .photo-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .photo-grid img {
+      height: 180px;
+    }
+
+    p {
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .entry-preview {
+      height: 200px;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+    }
+
+    .preview-content {
+      padding: 1.5rem 1rem 1rem;
+    }
+
+    .date {
+      font-size: 0.9rem;
+    }
+
+    .diary-header {
+      padding: 1rem;
+    }
+
+    .diary-content {
+      padding: 0 1rem 1rem;
+    }
+
+    .expand-text {
+      font-size: 0.9rem;
+    }
+
+    .photo-grid img {
+      height: 160px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const diaryHeaders = document.querySelectorAll('.diary-header');
+    const diaryEntries = document.querySelectorAll('.diary-entry');
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    const closeBtn = document.querySelector('.close');
+    const prevBtn = document.getElementById('prevButton');
+    const nextBtn = document.getElementById('nextButton');
+    
+    let currentImageIndex = 0;
+    let currentGallery = [];
+
+    // Handle expand/collapse
+    diaryHeaders.forEach(header => {
+      header.addEventListener('click', () => {
+        const isExpanded = header.getAttribute('aria-expanded') === 'true';
+        header.setAttribute('aria-expanded', !isExpanded);
+        const expandText = header.querySelector('.expand-text');
+        if (expandText) {
+          expandText.textContent = isExpanded ? 'Read full diary entry' : 'Close diary entry';
+        }
+      });
+    });
+
+    // Image gallery functionality
+    function openModal(imageSrc, gallery) {
+      modal.style.display = 'block';
+      modalImg.src = imageSrc;
+      currentGallery = gallery;
+      currentImageIndex = currentGallery.indexOf(imageSrc);
+      updateNavigationButtons();
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      modal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    function updateNavigationButtons() {
+      prevBtn.style.display = currentImageIndex > 0 ? 'flex' : 'none';
+      nextBtn.style.display = currentImageIndex < currentGallery.length - 1 ? 'flex' : 'none';
+    }
+
+    function showImage(index) {
+      currentImageIndex = index;
+      modalImg.src = currentGallery[index];
+      updateNavigationButtons();
+    }
+
+    // Event listeners for gallery
+    document.querySelectorAll('.gallery-image').forEach(img => {
+      img.addEventListener('click', function() {
+        const gallery = this.dataset.gallery.split(',');
+        openModal(this.src, gallery);
+      });
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', e => {
+      if (e.target === modal) closeModal();
+    });
+
+    prevBtn.addEventListener('click', () => {
+      if (currentImageIndex > 0) showImage(currentImageIndex - 1);
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentImageIndex < currentGallery.length - 1) showImage(currentImageIndex + 1);
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', e => {
+      if (modal.style.display === 'block') {
+        if (e.key === 'Escape') closeModal();
+        if (e.key === 'ArrowLeft' && currentImageIndex > 0) showImage(currentImageIndex - 1);
+        if (e.key === 'ArrowRight' && currentImageIndex < currentGallery.length - 1) showImage(currentImageIndex + 1);
+      }
+    });
+
+    // Intersection Observer for scroll animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('show');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.2,
+      rootMargin: '0px 0px -100px 0px'
+    });
+
+    diaryEntries.forEach(entry => {
+      observer.observe(entry);
+    });
+  });
+</script>

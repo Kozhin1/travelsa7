@@ -1,0 +1,61 @@
+---
+interface Props {
+  backgroundImage: string;
+}
+
+const { backgroundImage } = Astro.props;
+---
+
+<section id="hero" class="section hero">
+  <div class="hero-overlay">
+    <h1>South America Trip</h1>
+    <p class="description">
+      Join us on an unforgettable journey across South America from December 2023 to February 2024. 
+      From the vibrant streets of Rio to the Galápagos Islands, discover the incredible diversity of this amazing continent.
+    </p>
+  </div>
+</section>
+
+<style>
+  .hero {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin: 0;
+    max-width: none;
+    padding: 0;
+    min-height: calc(100vh - 60px);
+    background-size: cover;
+    background-position: center;
+    background-image: url('https://files.kozhin.co.uk/images/hero.webp');
+  }
+  .hero-overlay {
+    background: rgba(0, 0, 0, 0.5);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 4rem 1rem;
+  }
+  h1 {
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    font-weight: 700;
+    line-height: 1.1;
+    text-align: center;
+    margin-bottom: 1em;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  }
+  .description {
+    margin-bottom: 3rem;
+    text-align: center;
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    color: rgb(var(--accent-light));
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+</style>

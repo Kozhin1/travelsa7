@@ -1,0 +1,234 @@
+---
+import { routeSegments } from '../../data/route';
+import { countries } from '../../data/countries';
+---
+
+<section id="map" class="section">
+  <h2>Interactive <span class="text-gradient">Map</span></h2>
+  <p class="description">
+    Explore our journey through South America by clicking on the markers.
+  </p>
+  <div 
+    class="map-container" 
+    id="travel-map" 
+    data-route-segments={JSON.stringify(routeSegments)}
+    data-countries={JSON.stringify(countries)}
+  ></div>
+</section>
+
+<style>
+  .map-container {
+    background: rgba(var(--accent-dark), 0.2);
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    height: 600px;
+    width: 100%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    .map-container {
+      height: 400px;
+    }
+  }
+
+  .custom-marker .marker-pin {
+    width: 40px;
+    height: 40px;
+    position: relative;
+  }
+
+  .custom-marker .marker-pin::before {
+    content: '';
+    width: 32px;
+    height: 32px;
+    background: rgb(var(--accent));
+    border: 4px solid rgb(var(--accent-light));
+    border-radius: 50% 50% 50% 0;
+    position: absolute;
+    transform: rotate(-45deg);
+    left: 50%;
+    top: 50%;
+    margin: -20px 0 0 -16px;
+    box-shadow: 0 0 15px rgba(var(--accent-light), 0.8);
+  }
+
+  .custom-marker .marker-pin::after {
+    content: '';
+    width: 14px;
+    height: 14px;
+    background: rgb(var(--accent-light));
+    position: absolute;
+    border-radius: 50%;
+    left: 50%;
+    top: 50%;
+    margin: -11px 0 0 -7px;
+  }
+
+  .transport-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
+  }
+
+  .icon-container {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0.25rem;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+
+  .custom-popup {
+    padding: 0.5rem;
+  }
+
+  .custom-popup h3 {
+    margin: 0 0 0.5rem 0;
+    color: rgb(var(--accent));
+    font-size: clamp(1rem, 1.5vw, 1.1rem);
+  }
+
+  .custom-popup p {
+    margin: 0;
+    font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+    color: #333;
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const mapElement = document.getElementById('travel-map');
+  if (!mapElement) return;
+
+  const routeSegments = JSON.parse(mapElement.dataset.routeSegments || '[]');
+  const countries = JSON.parse(mapElement.dataset.countries || '[]');
+
+  const map = L.map('travel-map', {
+    zoomControl: false,
+    scrollWheelZoom: true,
+    minZoom: 2,
+    maxZoom: 18
+  }).setView([-15.7801, -47.9292], 4);
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '©OpenStreetMap, ©CartoDB',
+    subdomains: 'abcd',
+    maxZoom: 19
+  }).addTo(map);
+
+  L.control.zoom({
+    position: 'topright'
+  }).addTo(map);
+
+  const transportStyles = {
+    plane: {
+      color: '#FF385C',
+      weight: 3,
+      opacity: 0.8,
+      dashArray: '10, 10',
+      lineCap: 'round'
+    },
+    bus: {
+      color: '#4CAF50',
+      weight: 3,
+      opacity: 0.8,
+      dashArray: '5, 5',
+      lineCap: 'round'
+    },
+    boat: {
+      color: '#2196F3',
+      weight: 3,
+      opacity: 0.8,
+      dashArray: '15, 10, 5, 10',
+      lineCap: 'round'
+    }
+  };
+
+  routeSegments.forEach(segment => {
+    if (segment.transport === 'plane') {
+      const latlngs = [segment.from, segment.to];
+      const midPoint = [
+        (segment.from[0] + segment.to[0]) / 2,
+        (segment.from[1] + segment.to[1]) / 2
+      ];
+      
+      const offsetLat = (segment.to[0] - segment.from[0]) * 0.1;
+      const curvedMidPoint = [
+        midPoint[0] + offsetLat,
+        midPoint[1]
+      ];
+      
+      const curvedPath = [
+        segment.from,
+        curvedMidPoint,
+        segment.to
+      ];
+      
+      L.polyline(curvedPath, transportStyles.plane).addTo(map);
+    } else {
+      const line = L.polyline([segment.from, segment.to], transportStyles[segment.transport]).addTo(map);
+    }
+    
+    const midpoint = [
+      (segment.from[0] + segment.to[0]) / 2,
+      (segment.from[1] + segment.to[1]) / 2
+    ];
+    
+    const transportIcons = {
+      plane: '✈️',
+      bus: '🚌',
+      boat: '🚢'
+    };
+
+    const icon = L.divIcon({
+      className: 'transport-icon',
+      html: `<div class="icon-container">${transportIcons[segment.transport]}</div>`,
+      iconSize: [24, 24],
+      iconAnchor: [12, 12]
+    });
+
+    L.marker(midpoint, { icon }).addTo(map);
+  });
+
+  const customIcon = L.divIcon({
+    className: 'custom-marker',
+    html: '<div class="marker-pin"></div>',
+    iconSize: [40, 40],
+    iconAnchor: [20, 40],
+    popupAnchor: [0, -40]
+  });
+
+  countries.forEach(country => {
+    const marker = L.marker(country.coordinates, { icon: customIcon })
+      .bindPopup(`
+        <div class="custom-popup">
+          <h3>${country.name}</h3>
+          <p>${country.description}</p>
+        </div>
+      `)
+      .addTo(map);
+    
+    const markerElement = marker.getElement();
+    if (markerElement) {
+      markerElement.style.animation = 'pulse 2s infinite';
+    }
+  });
+
+  setTimeout(() => {
+    map.invalidateSize();
+    
+    const bounds = routeSegments.reduce((acc, segment) => {
+      acc.extend(segment.from);
+      acc.extend(segment.to);
+      return acc;
+    }, L.latLngBounds(routeSegments[0].from, routeSegments[0].to));
+    
+    map.fitBounds(bounds, {
+      padding: [50, 50],
+      maxZoom: 4
+    });
+  }, 250);
+});
+</script>

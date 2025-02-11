@@ -1,0 +1,60 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/sections/Hero.astro';
+import Countries from '../components/sections/Countries.astro';
+import Map from '../components/sections/Map.astro';
+import Timeline from '../components/sections/Timeline.astro';
+import Facts from '../components/sections/Facts.astro';
+---
+
+<Layout title="South America Trip">
+  <main>
+    <Hero backgroundImage="/images/hero.png" />
+    <Facts />
+    <Countries />
+    <Map />
+    <Timeline />
+  </main>
+</Layout>
+
+<style>
+  main {
+    color: white;
+    font-size: 20px;
+    line-height: 1.6;
+    padding-top: 60px;
+  }
+  .section {
+    min-height: 100vh;
+    padding: 4rem 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    max-width: 1200px;
+    margin: 0 auto;
+    scroll-margin-top: 80px;
+  }
+  h2 {
+    font-size: clamp(2rem, 6vw, 3rem);
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+    margin-bottom: 1em;
+  }
+  .text-gradient {
+    background-image: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 400%;
+    background-position: 0%;
+  }
+  .description {
+    margin-bottom: 3rem;
+    text-align: center;
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    color: rgb(var(--accent-light));
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+</style>

@@ -1,0 +1,113 @@
+---
+const facts = [
+  {
+    number: "9",
+    label: "Countries",
+    icon: "🗺️"
+  },
+  {
+    number: "63",
+    label: "Days",
+    icon: "📅"
+  },
+  {
+    number: "24,000",
+    label: "Kilometers",
+    icon: "✈️"
+  },
+  {
+    number: "2",
+    label: "World Wonders",
+    icon: "🏛️"
+  },
+  {
+    number: "4,700",
+    label: "Highest Altitude (Meters)",
+    icon: "⛰️"
+  },
+  {
+    number: "0-37",
+    label: "°C Temperature",
+    icon: "🌡️"
+  }
+];
+---
+
+<section id="facts" class="section facts-section">
+  <h2>Journey <span class="text-gradient">Facts</span></h2>
+  <div class="facts-grid">
+    {facts.map(fact => (
+      <div class="fact-card">
+        <div class="icon">{fact.icon}</div>
+        <div class="number">{fact.number}</div>
+        <div class="label">{fact.label}</div>
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .facts-section {
+    background: rgba(var(--accent-dark), 0.1);
+    padding: 6rem 1rem;
+  }
+
+  .facts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .fact-card {
+    background: rgba(var(--accent-dark), 0.2);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .fact-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(var(--accent), 0.3);
+  }
+
+  .icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .number {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: bold;
+    color: rgb(var(--accent-light));
+    line-height: 1;
+  }
+
+  .label {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    color: white;
+    opacity: 0.9;
+  }
+
+  @media (max-width: 768px) {
+    .facts-section {
+      padding: 4rem 1rem;
+    }
+
+    .facts-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .facts-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
